@@ -102,12 +102,6 @@ public class MainViewController {
 						e.printStackTrace();
 					}	
 				}
-				else if (event.getCode() == KeyCode.CONTROL)
-				{
-					String[] searchTokens = cmbBox.getEditor().getText().toString().split("\\s+");
-					
-					searchTokens[searchTokens.length-1].replaceFirst(searchTokens[searchTokens.length-1], cmbBox.getItems().get(0));
-				}
 			}
 		});
 		
@@ -134,8 +128,8 @@ public class MainViewController {
             			cmbBox.getItems().clear();
             		}
         		}
-        		if (event.getCode() == KeyCode.SPACE)
-        			cmbBox.getItems().clear();
+        		//if (event.getCode() == KeyCode.SPACE)
+        			//cmbBox.getItems().clear();
         	}
         });
         
