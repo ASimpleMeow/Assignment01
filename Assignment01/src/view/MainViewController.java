@@ -12,7 +12,6 @@ import controllers.Driver;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -23,6 +22,14 @@ import javafx.scene.input.KeyEvent;
 import models.AutoComplete;
 import models.QuickAutocomplete;
 
+/**
+ * 
+ * A Controller for the MainView, handles all interaction with the MainView window
+ * as well as handling the input and output data for the AutoComplete
+ * 
+ * @author Oleksandr Kononov
+ *
+ */
 public class MainViewController {
 	
 	@FXML
@@ -61,8 +68,12 @@ public class MainViewController {
 			System.err.println("Error While Taking In Data From URL Please Check You Internet Connection");
 			e.printStackTrace();
 		}
+		
+		//Changes the amount of rows to be displayed by k
 		cmbBox.setVisibleRowCount(k);
-		//Adds a listener to when the user focuses out of the kField
+		
+		//Adds a listener to when the user focuses out of the kField in order to change the
+		//k value when it has been detected that the value has changed in the TextField
 		kField.focusedProperty().addListener(new ChangeListener<Boolean>() {
 		    @Override
 		    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
@@ -73,7 +84,7 @@ public class MainViewController {
 		        		cmbBox.setVisibleRowCount(k);
 		        	}catch(Exception e)
 		        	{
-		        		Driver.showErrorMessage("ERROR", "Invalid Integer", "Please insert a valid integer into the k text field.");
+		        		Driver.showErrorMessage("ERROR", "Invalid Integer", "Please Insert A Valid Integer Into The 'k' Text Field.");
 		        		k = 5;
 		        		kField.setText(Integer.toString(k));
 		        	}
@@ -81,31 +92,8 @@ public class MainViewController {
 		    }
 		});
 		
-		cmbBox.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>()
-				{
-					@Override
-					public void handle(KeyEvent event) {
-						if(event.getCode() == KeyCode.ENTER)
-						{
-							String url = "https://www.google.ie/search?q=";
-							String[] searchTokens = cmbBox.getEditor().getText().toString().split("\\s+");
-							
-							for(int i=0;i<searchTokens.length;i++)
-								url+=searchTokens[i]+"+";
-							
-			    			try {
-								Desktop.getDesktop().browse(new URI(url));
-							} catch (IOException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							} catch (URISyntaxException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-						}
-					}
-				});
-		
+		//Sets an EventHandler which will execute when a key is released
+		//This will fill the ComboBox items with results from the matches method of AutoComplete
 		cmbBox.setOnKeyReleased(new EventHandler<KeyEvent>(){
         	@Override
         	public void handle(KeyEvent event)
@@ -123,20 +111,64 @@ public class MainViewController {
         				cmbBox.getItems().add(it.next());
         			}
             		cmbBox.show();
-        		}catch (NullPointerException e)
+        		}catch (NullPointerException e) //Exception due to null results from matches
         		{
         			cmbBox.getItems().clear();
         		}
         	}
         });
+		
+		//Adds EventFilter of events involving release of key.
+		//This is executed before the EventHandler so here I can catch special keys that
+		//I want to perform a special function. E.g ENTER key and CONTROL Key
+		cmbBox.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>()
+		{
+			@Override
+			public void handle(KeyEvent event) {
+				//If ENETER is released, opens a browser and Goolge searches the input
+				if(event.getCode() == KeyCode.ENTER)
+				{
+					String url = "https://www.google.ie/search?q=";
+					String[] searchTokens = cmbBox.getEditor().getText().toString().split("\\s+");
+					
+					for(int i=0;i<searchTokens.length;i++)
+						url+=searchTokens[i]+"+";
+					
+	    			try {
+						Desktop.getDesktop().browse(new URI(url));
+					} catch (IOException e) {
+						Driver.showErrorMessage("ERROR", "IOException", "Problem taking in I/O, please check access to your computer");
+						e.printStackTrace();
+					} catch (URISyntaxException e) {
+						Driver.showErrorMessage("ERROR", "URISyntaxException", "Internal Error of handling the URI has occured!");
+						e.printStackTrace();
+					}
+				}
+				//If CONTROL Key is released, then auto-completes the word from highest result in matches
+				else if(event.getCode() == KeyCode.CONTROL)
+				{
+					String[] searchTokens = cmbBox.getEditor().getText().split("\\s+");
+					String input = cmbBox.getEditor().getText();
+					try{
+						input = input.replaceFirst(searchTokens[searchTokens.length-1], cmbBox.getItems().get(0));
+						cmbBox.getEditor().setText(input+" ");
+						cmbBox.getEditor().end();
+					}catch (IndexOutOfBoundsException e)
+					{
+						System.err.println("IndexOutOfBoundsException - Could Not AutoComplete Through CONTROL Key Due To There Being No Valid Input To AutoComplete");
+					}
+				}
+			}
+		});
         
+		//Adds an EventHandler to handle any events involving releasing keys
+		//This will allow near real-time output of results for the weightOf method
         weightOfField.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
         	@Override
         	public void handle(KeyEvent event)
         	{
         		
         		String input = weightOfField.getText().trim().toLowerCase();
-        		//System.out.println(autoComplete.bestMatch(input));
         		weightOfResult.setText(Double.toString(autoComplete.weightOf(input)));
         		if(event.getCode().isWhitespaceKey())
         			weightOfField.setText("");
@@ -145,13 +177,14 @@ public class MainViewController {
         	}
         });
         
+        //Adds an EventHandler to handle any events involving releasing keys
+        //This will allow near real-time output of results for the bestMatch method
         bestMatchField.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
         	@Override
         	public void handle(KeyEvent event)
         	{
         		
         		String input = bestMatchField.getText().trim().toLowerCase();
-        		//System.out.println(autoComplete.bestMatch(input));
         		bestMatchResult.setText(autoComplete.bestMatch(input));
         		if(event.getCode().isWhitespaceKey())
         			bestMatchField.setText("");
@@ -172,7 +205,12 @@ public class MainViewController {
 	{
 		Driver.showHelpMessage("Help Information","Olkesandr Kononov - Quick Auto-Complete",
 				"This is my assignment of Auto-Complete. This is the Quick Auto-Complete "
-				+ "implementation. Type in the k value to get k result for the search");
+				+ "implementation (can be changed to BruteForce in the code).\n\n\n"
+				+ "Type in the k value to get k results for the matches of AutoComplete.\n\n"
+				+ "Type in a prefix into the TextField\n\n"
+				+ "Hit the CONTROL Key and the highest match from the list will replace your word.\n\n"
+				+ "Hit the ENTER Key and the input in the TextField will be Google searched on you browser.\n\n"
+				+ "Thank You For Reading.");
 	}
 	
 	/**
@@ -185,19 +223,4 @@ public class MainViewController {
 		Platform.exit();
 		System.exit(0);//closes program.
 	}
-	
-	@FXML 
-	private void handleSearch()
-	{
-		try {
-			Desktop.getDesktop().browse(new URI("http://www.google.com"));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
-
 }
