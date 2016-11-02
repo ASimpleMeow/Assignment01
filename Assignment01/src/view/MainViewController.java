@@ -12,6 +12,7 @@ import controllers.Driver;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -80,56 +81,52 @@ public class MainViewController {
 		    }
 		});
 		
-		cmbBox.setOnKeyPressed(new EventHandler<KeyEvent>(){
-
-			@Override
-			public void handle(KeyEvent event) {
-				if(event.getCode() == KeyCode.ENTER)
+		cmbBox.addEventFilter(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>()
 				{
-					String url = "https://www.google.ie/search?q=";
-					String[] searchTokens = cmbBox.getEditor().getText().toString().split("\\s+");
-					
-					for(int i=0;i<searchTokens.length;i++)
-						url+=searchTokens[i]+"+";
-					
-	    			try {
-						Desktop.getDesktop().browse(new URI(url));
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					} catch (URISyntaxException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}	
-				}
-			}
-		});
+					@Override
+					public void handle(KeyEvent event) {
+						if(event.getCode() == KeyCode.ENTER)
+						{
+							String url = "https://www.google.ie/search?q=";
+							String[] searchTokens = cmbBox.getEditor().getText().toString().split("\\s+");
+							
+							for(int i=0;i<searchTokens.length;i++)
+								url+=searchTokens[i]+"+";
+							
+			    			try {
+								Desktop.getDesktop().browse(new URI(url));
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (URISyntaxException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						}
+					}
+				});
 		
-		
-        cmbBox.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>() {
+		cmbBox.setOnKeyReleased(new EventHandler<KeyEvent>(){
         	@Override
         	public void handle(KeyEvent event)
         	{
-        		if(event.getCode() != KeyCode.DOWN)
+        		cmbBox.hide();
+    			cmbBox.getItems().clear();
+        		String input = cmbBox.getEditor().getText().trim().toLowerCase();
+        		String[] inputTokens = input.split("\\s+");
+        		Iterator<String> it;
+        		try
         		{
-        			cmbBox.hide();
+        			it = autoComplete.matches(inputTokens[inputTokens.length-1], k).iterator();
+        			while(it.hasNext())
+        			{
+        				cmbBox.getItems().add(it.next());
+        			}
+            		cmbBox.show();
+        		}catch (NullPointerException e)
+        		{
         			cmbBox.getItems().clear();
-            		String input = cmbBox.getEditor().getText().trim().toLowerCase();
-            		String[] inputTokens = input.split("\\s+");
-            		Iterator<String> it;
-            		try
-            		{
-            			it = autoComplete.matches(inputTokens[inputTokens.length-1], k).iterator();
-            			while(it.hasNext())
-                			cmbBox.getItems().add(it.next());
-                		cmbBox.show();
-            		}catch (NullPointerException e)
-            		{
-            			cmbBox.getItems().clear();
-            		}
         		}
-        		//if (event.getCode() == KeyCode.SPACE)
-        			//cmbBox.getItems().clear();
         	}
         });
         
