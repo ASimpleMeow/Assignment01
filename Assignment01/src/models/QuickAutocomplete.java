@@ -7,16 +7,22 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Scanner;
-
-import edu.princeton.cs.introcs.Stopwatch;
 import util.BinarySearch;
 
+/**
+ * QuickAutocomplete implements the AutoComplete interface and is meant to be
+ * more efficient than BruteforceAutocomplete.
+ * It will auto-complete a word from the prefix you give it and output the data in its
+ * descending order of weight.
+ * 
+ * @author Oleksandr Kononov
+ *
+ */
 public class QuickAutocomplete implements AutoComplete{
 
+	//Declaring Variables
 	private static String url = "https://wit-computing.github.io/algorithms-2016/topic04/book-2/data/wiktionary.txt";
 	private List<Term> termList;
-	private Scanner input;
 	
 	public static void main(String[] args)
 	{
@@ -31,94 +37,34 @@ public class QuickAutocomplete implements AutoComplete{
 		}
 	}
 	
+	/**
+	 * The constructor for this class will instantiate all the variables
+	 * 
+	 * @param url
+	 * @throws MalformedURLException
+	 * @throws IOException
+	 */
 	public QuickAutocomplete(String url) throws MalformedURLException, IOException
 	{
 		if(url == null)
 			throw new NullPointerException();
-		Stopwatch stopwatch = new Stopwatch();
 		termList = new ArrayList<Term>(new TermList(url,false).getTermList());
-		
-		System.out.println("Time to load terms : "+stopwatch.elapsedTime());
-		input = new Scanner(System.in);
-		
-		//mainMenu();
 	}
 	
-	public int menuDisplay()
-	{
-		System.out.println("1) Weight Of ");
-		System.out.println("2) Best Match");
-		System.out.println("3) k Matches");
-		System.out.println("0) Exit");
-		System.out.print(">> ");
-		
-		try{
-			return input.nextInt();
-		}catch (Exception e)
-		{
-			return -1;
-		}
-	}
-	
-	public void mainMenu()
-	{
-		int choice = menuDisplay();
-		Stopwatch stopwatch;
-		String term;
-		
-		while(choice != 0)
-		{
-			input.nextLine();
-			System.out.print(">>");
-			switch (choice)
-			{
-				case 1:
-					term = input.next();
-					stopwatch = new Stopwatch();
-					System.out.println(weightOf(term));
-					System.out.println("Time elapsed: "+stopwatch.elapsedTime());
-					stopwatch = null;
-				break;
-				case 2:
-					term = input.next().trim().toLowerCase();
-					stopwatch = new Stopwatch();
-					System.out.println(bestMatch(term));
-					System.out.println("Time elapsed: "+stopwatch.elapsedTime());
-					stopwatch = null;
-				break;
-				case 3:
-					String prefix = input.next();
-					System.out.print("(k value)>>");
-					int k;
-					try{
-						k=input.nextInt();
-					}catch (Exception e)
-					{
-						k=1;
-					}
-					stopwatch = new Stopwatch();
-					System.out.println(matches(prefix,k));
-					System.out.println("Time elapsed: "+stopwatch.elapsedTime());
-					stopwatch = null;
-				break;
-				default:
-					System.err.println("Invalid Input");
-				break;
-			}
-			input.nextLine();
-			choice = menuDisplay();
-		}
-		
-		System.out.println("Shutting Down");
-		System.exit(0);
-	}
-	
+	/**
+	 * This method will take in a term string and if it exists in the
+	 * termList then it will find it using BinarySearch,
+	 * sort the terms by their weight and return the terms weight
+	 * 
+	 * @param term
+	 * @return double - the weight of the term
+	 */
 	public double weightOf(String term) {
 		if(term == null)
 			throw new NullPointerException();
-		//termsStrings = termList.stream().map(Term::getTerm).collect(Collectors.toList());
+		//Getting the index of the Term by performing BinarySearch
 		int index = BinarySearch.binaryTermSearch(termList, term);
-		if (index != -1)
+		if (index != -1)//-1 signifies that it couldn't find the term
 		{
 			return termList.get(index).getWeight();
 		}
@@ -128,13 +74,19 @@ public class QuickAutocomplete implements AutoComplete{
 		}
 	}
 
+	/**
+	 * This method will take in a prefix for a term and will use BinarySearch  
+	 * to find the full term in the termList
+	 * 
+	 * @param prefix
+	 * @return String - the best matching String
+	 */
 	public String bestMatch(String prefix) {
 		if(prefix == null)
 			throw new NullPointerException();
-		//termsStrings = termList.stream().map(Term::getTerm).collect(Collectors.toList());
-		//System.out.println(termsStrings.size());
-		List<Term> terms = BinarySearch.binaryPrefixSearch(termList, prefix);
-		if(terms != null && terms.size() > 0)
+		//Returns a block of terms with the prefix
+		List<Term> terms = BinarySearch.binaryPrefixSearch(termList, prefix.trim().toLowerCase());
+		if(terms != null)//Making sure there are Terms in terms
 		{
 			terms = sortByWeight(terms);
 			return terms.get(0).getTerm();
@@ -148,14 +100,14 @@ public class QuickAutocomplete implements AutoComplete{
 	public Iterable<String> matches(String prefix, int k) {
 		if(prefix == null)
 			throw new NullPointerException();
-		//termsStrings = termList.stream().map(Term::getTerm).collect(Collectors.toList());
-		List<Term> terms = BinarySearch.binaryPrefixSearch(termList, prefix.trim().toLowerCase());
-		List<String> result = new ArrayList<String>();
-		ListIterator<Term> iterator = null;
 		if(k < 1)
 		{
 			throw new IllegalArgumentException();
 		}
+		//Returning a block of Terms with the same prefix
+		List<Term> terms = BinarySearch.binaryPrefixSearch(termList, prefix.trim().toLowerCase());
+		List<String> result = new ArrayList<String>();
+		ListIterator<Term> iterator = null;
 		if(terms == null)
 		{
 			throw new NullPointerException();
@@ -177,6 +129,13 @@ public class QuickAutocomplete implements AutoComplete{
 		return result;
 	}
 	
+	/**
+	 * This method will take in a list of terms and sort them 
+	 * by their descending order of weight
+	 * 
+	 * @param terms
+	 * @return List<Term>
+	 */
 	private List<Term> sortByWeight(List<Term> terms)
 	{
 		Collections.sort(terms, new Comparator<Term>()

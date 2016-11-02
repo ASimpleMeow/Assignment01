@@ -84,7 +84,7 @@ public class MainViewController {
 		        		cmbBox.setVisibleRowCount(k);
 		        	}catch(Exception e)
 		        	{
-		        		Driver.showErrorMessage("ERROR", "Invalid Integer", "Please Insert A Valid Integer Into The 'k' Text Field.");
+		        		Driver.showErrorMessage("ERROR", "IllegalArgumentException", "'k' Value Must Be An Integer");
 		        		k = 5;
 		        		kField.setText(Integer.toString(k));
 		        	}
@@ -114,6 +114,9 @@ public class MainViewController {
         		}catch (NullPointerException e) //Exception due to null results from matches
         		{
         			cmbBox.getItems().clear();
+        		}catch (IllegalArgumentException e)
+        		{
+        			Driver.showErrorMessage("ERROR", "IllegalArgumentException", "The 'k' Value Must Be A Positive Integer!");
         		}
         	}
         });

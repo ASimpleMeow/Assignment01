@@ -11,9 +11,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.layout.AnchorPane;
 import java.io.IOException;
 
-
+/**
+ * Driver is the class that will be the first to run and will setup our
+ * MainView window and manage pop-up windows for error's or information.
+ * 
+ * @author Oleksandr Kononov
+ *
+ */
 public class Driver extends Application{
 	
+	//The window
 	private Stage primaryStage;
 	
 	
@@ -30,6 +37,9 @@ public class Driver extends Application{
 		showMainView();
 	}
 	
+	/**
+	 * This method will setup our scene(everything thats inside a window) for the window.
+	 */
 	private void showMainView()
 	{
 		try
@@ -47,9 +57,10 @@ public class Driver extends Application{
 		{
 			e.printStackTrace();
 		}
+		//Making sure that the program closes once the window is closed
 		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
             public void handle(WindowEvent we) {
-                System.exit(0);
+                System.exit(0);//Exit the program
             }
         });
 	}
