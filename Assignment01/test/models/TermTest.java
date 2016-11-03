@@ -6,22 +6,37 @@ import org.junit.Test;
 import org.junit.After;
 import org.junit.Before;
 
+/**
+ * A JUnit Test case to test the Term
+ * 
+ * @author Oleksandr Kononov
+ *
+ */
 public class TermTest {
 
 	Term term1;
 	
+	/**
+	 * Setting up a term before every test
+	 */
 	@Before
 	public void setup()
 	{
 		term1 = new Term("hello",2);
 	}
 	
+	/**
+	 * Making the term null before every test
+	 */
 	@After
 	public void tearDown()
 	{
 		term1 = null;
 	}
 	
+	/**
+	 * Testing the constructor
+	 */
 	@Test
 	public void testConstructor() {
 		Term term2 = new Term("",0);
@@ -33,13 +48,31 @@ public class TermTest {
 		assertEquals(1,term3.getWeight(),0.001);
 	}
 	
+	/**
+	 * Testing for NullPointerException when constructing a Term with
+	 * null term String
+	 */
 	@Test (expected=NullPointerException.class)
+	public void testNullPointerException()
+	{
+		@SuppressWarnings("unused")
+		Term term = new Term(null,1);
+	}
+	
+	/**
+	 * Testing for IllegalArugmentException when constructing a Term with
+	 * negative weight
+	 */
+	@Test (expected=IllegalArgumentException.class)
 	public void testIllegalArgumentException()
 	{
 		@SuppressWarnings("unused")
-		Term term = new Term(null,-1);
+		Term term = new Term("cats",-1);
 	}
 	
+	/**
+	 * Testing Getters
+	 */
 	@Test
 	public void testGetters()
 	{
@@ -47,18 +80,27 @@ public class TermTest {
 		assertEquals(2,term1.getWeight(),0.001);
 	}
 	
+	/**
+	 * Test for NullPointerException when setting null String
+	 */
 	@Test (expected=NullPointerException.class)
 	public void testTermSettersException()
 	{
 		term1.setTerm(null);
 	}
 	
+	/**
+	 * Test for IllegalArgumentException when setting negative weight
+	 */
 	@Test (expected=IllegalArgumentException.class)
 	public void testWeightSettersException()
 	{
 		term1.setWeight(-1);
 	}
 	
+	/**
+	 * Testing Setters
+	 */
 	@Test
 	public void testSetters()
 	{
@@ -68,6 +110,9 @@ public class TermTest {
 		assertEquals(100,term1.getWeight(),0.01);
 	}
 	
+	/**
+	 * Testing toString method
+	 */
 	@Test
 	public void testToString()
 	{

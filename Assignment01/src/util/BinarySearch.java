@@ -15,14 +15,14 @@ public class BinarySearch {
 	
 	/**
 	 * This will find a Term in the list by performing BinarySearch on the
-	 * List<Term> given, using String term as the prefix. Returning the full
-	 * Terms index in the list
+	 * List<Term> given and using String term. Returning the full
+	 * Term object index in the list
 	 * 
 	 * @param list
 	 * @param term
 	 * @return int index
 	 */
-	public static int binaryTermSearch(List<Term> list,String prefix)
+	public static int binaryTermSearch(List<Term> list,String term)
 	{
 		//Setting the initial low and high index
 		int lowIndex = 0;
@@ -33,7 +33,7 @@ public class BinarySearch {
 		{
 			int middleIndex = (lowIndex + highIndex)/2;//Getting the middle index
 			//Using the compareTo to get an int value
-			int compareResult = list.get(middleIndex).getTerm().compareToIgnoreCase(prefix);
+			int compareResult = list.get(middleIndex).getTerm().compareToIgnoreCase(term);
 			if(compareResult==0)//Term index found
 			{
 				return middleIndex;
