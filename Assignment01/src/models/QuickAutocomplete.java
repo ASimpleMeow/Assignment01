@@ -21,21 +21,7 @@ import util.BinarySearch;
 public class QuickAutocomplete implements AutoComplete{
 
 	//Declaring Variables
-	private static String url = "https://wit-computing.github.io/algorithms-2016/topic04/book-2/data/wiktionary.txt";
 	private List<Term> termList;
-	
-	public static void main(String[] args)
-	{
-		try 
-		{
-			new QuickAutocomplete(url);
-		}
-		catch (MalformedURLException e) {
-			System.err.println("Error Navigating To The URL");
-		} catch (IOException e) {
-			System.err.println("Error While Taking In Data From URL Please Check You Internet Connection");
-		}
-	}
 	
 	/**
 	 * The constructor for this class will instantiate all the variables

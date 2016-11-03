@@ -63,9 +63,11 @@ public class MainViewController {
 			autoComplete = new QuickAutocomplete(url);
 		} catch (MalformedURLException e) {
 			System.err.println("Error Navigating To The URL");
+			Driver.showErrorMessage("ERROR", "MalformedURLException", "Error Processing The URL");
 			e.printStackTrace();
 		} catch (IOException e) {
 			System.err.println("Error While Taking In Data From URL Please Check You Internet Connection");
+			Driver.showErrorMessage("ERROR", "IOException", "Please Check Your Internet Connection");
 			e.printStackTrace();
 		}
 		
