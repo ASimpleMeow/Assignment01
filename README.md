@@ -1,4 +1,4 @@
-# Assignment01
+# Assignment01 by Oleksandr Kononov
 This program will Auto-Complete a word for you when you type.
 
 It's feature's include:
@@ -34,3 +34,10 @@ Tesing:
   ->QuickAutocompleteTest tests the QuickAutocomplete class
   ->TermListTest tests the TermList class
   ->TermTest tests the Term class
+
+
+
+Oleksandr Kononov (20071032),
+Algorithms,
+Entertainment Systems,
+Year 2.
