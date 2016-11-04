@@ -62,6 +62,12 @@ Tesing:
   ->TermTest tests the Term class
 
 
+Testing Strategy:
+
+I will use the assertEquals method from the JUnit library to test my expected result to the actual results. To test the Exceptions
+I will add the (expected = "Exception".class) after the @Test and in the method make the program test something that should 
+return an Exception. This outlines my testing strategy, for further details you can look at the JUnit test cases in the 
+test source folder. 
 
 Oleksandr Kononov (20071032),
 Algorithms,
